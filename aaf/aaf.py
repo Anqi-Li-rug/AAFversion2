@@ -47,7 +47,7 @@ def antialias_visibilities(vis, subband_response, nconv):
     # Use linear interpolation to estimate the missing subbands
     ob_spec1 = list((np.swapaxes(ob_spec, 0, 2)).reshape(ob_spec.shape[1] * ob_spec.shape[2], ob_spec.shape[0]))
     ob_spec2 = np.swapaxes(np.array(
-            [np.interp(np.arange(0, ob_spec.shape[0], 1), np.where(x > 0)[0], x[np.where(x > 0)]) for x in
+            [np.interp(np.arange(0, ob_spec.shape[0], 1), np.where(x > 0)[0], x[np.where(x > 0)]) if (np.sum(x)>0) else np.zeros(x.size) for x in
              ob_spec1]).reshape(ob_spec.shape[2], ob_spec.shape[1], ob_spec.shape[0]), 0, 2)
     ob_spec = ob_spec2.copy()
 
@@ -166,6 +166,7 @@ def antialias_ms(msname, tol, outputcolname="DATA"):
         None
     """
     logger = logging.getLogger("aaf")
+    logging.basicConfig(level=logging.INFO)
     logger.info("Anti-aliasing measurement set " + msname)
     # 1. Open MS and read subtable 'DATA',
     t1 = datetime.datetime.now()
