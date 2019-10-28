@@ -208,7 +208,7 @@ def antialias_ms(msname, tol, outputcolname="DATA"):
 
     # 3. Do AAF calibration concurrently (parallel)
     num_cpus = multiprocessing.cpu_count()
-    pool = multiprocessing.Pool(processes=num_cpus-1 )
+    pool = multiprocessing.Pool(processes=num_cpus-1)
     # Here itertools and the function antialias_list() are just bridges between pool.map and function antialias_visibilities(), because pool.map
     # is not suitable for function that has multi arguments.
     #silence all the RuntimeWarnings
@@ -221,6 +221,8 @@ def antialias_ms(msname, tol, outputcolname="DATA"):
         ms.putcell(outputcolname,rowi,x)
         rowi=rowi+1
     t2 = datetime.datetime.now()
+    pool.close()
+    pool.join()
     log_msg = "Performed anti-aliasing on MS, total execution time :"+ str((t2 - t1).total_seconds())+"seconds, wrote result to column " + outputcolname
     pt.taql('INSERT INTO {}::HISTORY SET MESSAGE="{}", APPLICATION="apercal"'.format(msname, log_msg))
     logger.info(log_msg)
